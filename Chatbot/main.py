@@ -5,7 +5,7 @@
 
 import google.generativeai as genai
 
-genai.configure(api_key="AIzaSyD_UtfjDiamZ_3OTuMjJ5Q7PD00zDFOylw")
+genai.configure(api_key="AIzaSyD_UtfjDiamZ_3OTuMjJ5Q7PD00zDFOylw1808")
 
 def chat_with_gemini(prompt):
     model = genai.GenerativeModel("gemini-pro-latest")  # or gemini-flash-latest or your listed model name
@@ -19,4 +19,5 @@ if __name__ == "__main__":
             break
         response = chat_with_gemini(user_input)
         print("Gemini:", response)
+
 
