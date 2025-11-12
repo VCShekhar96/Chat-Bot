@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI ChatBot</title>
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+    <div class="chat-container">
+        <header>
+            <h1>💬 AI ChatBot</h1>
+            <p class="small">Futuristic demo • Built by V Chandrashekhar</p>
+        </header>
+        <div class="chat-box" id="chat-box"></div>
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off" />
+            <button id="send-btn">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById("chat-box");
+        const sendBtn = document.getElementById("send-btn");
+        const userInput = document.getElementById("user-input");
+
+        function appendMessage(sender, message) {
+            const msgDiv = document.createElement("div");
+            msgDiv.className = sender + " message";
+            msgDiv.innerHTML = message;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function appendTyping() {
+            const t = document.createElement("div");
+            t.className = "bot message typing";
+            t.id = "typing";
+            t.innerHTML = "<span></span><span></span><span></span>";
+            chatBox.appendChild(t);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function removeTyping() {
+            const t = document.getElementById("typing");
+            if (t) t.remove();
+        }
+
+        async function sendMessage() {
+            const msg = userInput.value.trim();
+            if (!msg) return;
+            appendMessage("user", "<strong>You:</strong> " + msg);
+            userInput.value = "";
+            appendTyping();
+
+            try {
+                const resp = await fetch("/get", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: new URLSearchParams({ msg })
+                });
+                const data = await resp.json();
+                removeTyping();
+                appendMessage("bot", "<strong>Bot:</strong> " + data.response);
+            } catch (e) {
+                removeTyping();
+                appendMessage("bot", "<strong>Bot:</strong> Error contacting server.");
+            }
+        }
+
+        sendBtn.addEventListener("click", sendMessage);
+        userInput.addEventListener("keypress", function(e) {
+            if (e.key === "Enter") sendMessage();
+        });
+    </script>
+</body>
+</html>
